@@ -2,7 +2,7 @@
 #include<cstdio>
 #include<cstring> 
 #include<cmath>
-#define maxn 100000
+#define maxn 1000000
 using namespace std;
 typedef long double db;
 typedef long long ll;
@@ -35,11 +35,11 @@ struct com{
 };
 int rev[maxn+5];
 void fft(com *x,int n,int type){
-	for(int i=0;i<n;i++) if(i<rev[i]) swap(i,rev[i]);
+	for(int i=0;i<n;i++) if(i<rev[i]) swap(x[i],x[rev[i]]);
 	for(int len=1;len<n;len*=2){
 		int sz=len*2;
 		com wn1=com(cos(2*pi/sz),sin(2*pi/sz)*type);
-		for(int l=0;l<len;l+=sz){
+		for(int l=0;l<n;l+=sz){
 			int r=l+len-1;
 			com wnk=com(1,0);
 			for(int i=l;i<=r;i++){
@@ -56,6 +56,7 @@ void fft(com *x,int n,int type){
 void mul(ll *ina,ll *inb,ll *outc,int n,ll mod){
 	static com p[maxn+5],q[maxn+5],r[maxn+5],s[maxn+5];
 	for(int i=0;i<n;i++){
+		ina[i]%=mod;inb[i]%=mod; 
 		p[i]=com(ina[i]>>15,ina[i]&((1<<15)-1));
 		q[i]=com(inb[i]>>15,inb[i]&((1<<15)-1));
 	}
@@ -64,9 +65,9 @@ void mul(ll *ina,ll *inb,ll *outc,int n,ll mod){
 	for(int i=0;i<n;i++){
 		int j=(i==0?0:n-i);
 		com aa=(p[i]+p[j].conj())*com(0.5,0);
-		com bb=(p[i]+p[j].conj())*com(0,-0.5);
+		com bb=(p[i]-p[j].conj())*com(0,-0.5);
 		com cc=(q[i]+q[j].conj())*com(0.5,0);
-		com dd=(q[i]+q[j].conj())*com(0,-0.5);
+		com dd=(q[i]-q[j].conj())*com(0,-0.5);
 		r[i]=aa*cc+aa*dd*com(0,1);
 		s[i]=bb*cc+bb*dd*com(0,1);
 	}
@@ -77,7 +78,7 @@ void mul(ll *ina,ll *inb,ll *outc,int n,ll mod){
 		ll ad=(ll)(r[i].imag()+0.5)%mod;
 		ll bc=(ll)(s[i].real()+0.5)%mod;
 		ll bd=(ll)(s[i].imag()+0.5)%mod;
-		outc[i]=((ac<<30)+((ad+bc)<<15)+bd);
+		outc[i]=((ac<<30)+((ad+bc)<<15)+bd)%mod;
 	}
 }
 
@@ -89,7 +90,7 @@ int main(){
     for(int i=0;i<=n;i++) scanf("%lld",&a[i]);
     for(int i=0;i<=m;i++) scanf("%lld",&b[i]);
 	int N=1,L=0;
-	while(N<n+m+1){
+	while(N<=n+m+1){
 		N*=2;
 		L++;
 	}
