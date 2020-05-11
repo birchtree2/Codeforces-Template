@@ -3,8 +3,8 @@
 #include<cstring>
 #include<cmath> 
 #include<algorithm>
-#define maxn 100000
-#define maxm 100000
+#define maxn 500000
+#define maxm 500000
 using namespace std;
 inline void qread(int &x) {
 	x=0;
@@ -36,7 +36,7 @@ int n,m;
 int a[maxn+5];
 int dn=0;
 int tmp[maxn+maxm+5];
-
+ 
 int bel[maxn+5];
 int cntq=0;
 struct qtype{
@@ -57,33 +57,52 @@ struct utype{
 	int v;
 }up[maxm+5];
 int ans[maxm+5];
-
-int cnt[maxn+maxm+5];
-int sumc[maxn+maxm+5];
-void add(int v){
-	sumc[cnt[v]]--;
-	cnt[v]++;
-	sumc[cnt[v]]++;
+ 
+//int cnt[maxn+maxm+5];
+//int sumc[maxn+maxm+5];
+//void add(int v){
+//	sumc[cnt[v]]--;
+//	cnt[v]++;
+//	sumc[cnt[v]]++;
+//}
+//void del(int v){
+//	sumc[cnt[v]]--;
+//	cnt[v]--;
+//	sumc[cnt[v]]++;
+//}
+//void update(int l,int r,int uid){
+//	if(up[uid].x>=l&&up[uid].x<=r){//被询问区间包含才真正修改cnt 
+//		del(a[up[uid].x]);
+//		add(up[uid].v);
+//	}
+//	 swap(a[up[uid].x],up[uid].v); //修改a的值,为了能撤回修改操作,需要交换 
+//}
+int cnt[maxn+maxm+5];//离散化之后值域为n+m 
+int sumcnt[maxn+maxm+5];//统计cnt出现的次数，用于求cnt的mex
+void add(int val){
+	sumcnt[cnt[val]]--;
+	cnt[val]++;
+	sumcnt[cnt[val]]++;
 }
-void del(int v){
-	sumc[cnt[v]]--;
-	cnt[v]--;
-	sumc[cnt[v]]++;
+void del(int val){
+	sumcnt[cnt[val]]--;
+	cnt[val]--;
+	sumcnt[cnt[val]]++;
 }
-void update(int l,int r,int uid){
-	if(up[uid].x>=l&&up[uid].x<=r){//被询问区间包含才真正修改cnt 
-		del(a[up[uid].x]);
-		add(up[uid].v);
+void update(int l,int r,utype &p){
+	if(l<=p.x&&p.x<=r){
+		del(a[p.x]);
+		add(p.v);
 	}
-	 swap(a[up[uid].x],up[uid].v); //修改a的值,为了能撤回修改操作,需要交换 
+	swap(p.v,a[p.x]);
 }
 int calc(){
 	int ans=1;
-	while(sumc[ans]) ans++;
+	while(sumcnt[ans]) ans++;
 	return ans;
 }
-
-
+ 
+ 
 int main(){
 	int cmd;
 	qread(n);
@@ -121,8 +140,8 @@ int main(){
 		while(r>q[i].r) del(a[r--]);
 		while(l>q[i].l) add(a[--l]);
 		while(r<q[i].r) add(a[++r]);
-		while(t<q[i].t) update(l,r,++t);
-		while(t>q[i].t) update(l,r,t--);
+		while(t>q[i].t) update(l,r,up[t--]);
+		while(t<q[i].t) update(l,r,up[++t]);
 		ans[q[i].id]=calc();
 	}
 	for(int i=1;i<=cntq;i++){
