@@ -2,9 +2,36 @@
 #include<cstdio>
 #include<cstring>
 #include<cmath> 
+#include<algorithm>
 #define maxn 100000
 #define maxm 100000
 using namespace std;
+inline void qread(int &x) {
+	x=0;
+	int sign=1;
+	char c=getchar();
+	while(c<'0'||c>'9') {
+		if(c=='-') sign=-1;
+		c=getchar();
+	}
+	while(c>='0'&&c<='9') {
+		x=x*10+c-'0';
+		c=getchar();
+	}
+	x=x*sign;
+}
+inline void qprint(int x) {
+	if(x<0) {
+		putchar('-');
+		qprint(-x);
+	} else if(x==0) {
+		putchar('0');
+		return;
+	} else {
+		if(x>=10) qprint(x/10);
+		putchar('0'+x%10);
+	}
+}
 int n,m;
 int a[maxn+5];
 int dn=0;
@@ -19,9 +46,9 @@ struct qtype{
 	int t;
 	friend bool operator < (qtype p,qtype q){
 		if(bel[p.l]==bel[q.l]){
-			if(bel[q.r]==bel[q.r]) return p.t<q.t;
+			if(bel[p.r]==bel[q.r]) return p.t<q.t;
 			else return p.r<q.r;
-		}else return bel[q.l]<bel[q.l];
+		}else return bel[p.l]<bel[q.l];
 	}
 }q[maxm+5];
 int cntu=0; 
@@ -43,53 +70,63 @@ void del(int v){
 	cnt[v]--;
 	sumc[cnt[v]]++;
 }
-void update(int qid,int uid){
-	if(up[uid].x>=q[qid].l&&up[uid].x<=q[qid].r){//被询问区间包含才真正修改cnt 
+void update(int l,int r,int uid){
+	if(up[uid].x>=l&&up[uid].x<=r){//被询问区间包含才真正修改cnt 
 		del(a[up[uid].x]);
 		add(up[uid].v);
-	}else swap(a[up[uid].x],up[uid].v); //否则只需要修改a的值,为了在l,r移动时能删除,需要交换 
+	}
+	 swap(a[up[uid].x],up[uid].v); //修改a的值,为了能撤回修改操作,需要交换 
 }
 int calc(){
-	int ans=0;
+	int ans=1;
 	while(sumc[ans]) ans++;
 	return ans;
 }
 
 
 int main(){
-	int op;
-	scanf("%d %d",&n,&m);
+	int cmd;
+	qread(n);
+	qread(m);
 	for(int i=1;i<=n;i++){
-		scanf("%d",&a[i]);
+		qread(a[i]);
 		tmp[++dn]=a[i];
 	}
 	for(int i=1;i<=m;i++){
-		scanf("%d",&op);
-		if(op==1){
+		qread(cmd);
+		if(cmd==1){
 			cntq++;
-			scanf("%d %d",q[cntq].l,q[cntq].r);
+			qread(q[cntq].l);
+			qread(q[cntq].r);
 			q[cntq].id=cntq;
 			q[cntq].t=cntu;
 		}else{
 			cntu++;
-			scanf("%d %d",&up[cntu].x,up[cntu].v);
-			tmp[++sz]=up[cntu].v;
+			qread(up[cntu].x);
+			qread(up[cntu].v);
+			tmp[++dn]=up[cntu].v;
 		}
 	}
 	sort(tmp+1,tmp+1+dn);
 	dn=unique(tmp+1,tmp+1+dn)-tmp-1;
-	for(int i=1;i<=n;i++) a[i]=lower_bound(tmp+1,tmp+1+dn,a[i]);
-	for(int i=1;i<=cntu;i++) up[i].v=lower_bound(tmp+1,tmp+1+dn,up[i].v);
+	for(int i=1;i<=n;i++) a[i]=lower_bound(tmp+1,tmp+1+dn,a[i])-tmp;
+	for(int i=1;i<=cntu;i++) up[i].v=lower_bound(tmp+1,tmp+1+dn,up[i].v)-tmp;
 	
 	int bsz=pow(n,2.0/3.0);
 	for(int i=1;i<=n;i++) bel[i]=i/bsz+1;
+	sort(q+1,q+1+cntq);
 	int l=1,r=0,t=0;
 	for(int i=1;i<=cntq;i++){
 		while(l<q[i].l) del(a[l++]);
 		while(r>q[i].r) del(a[r--]);
 		while(l>q[i].l) add(a[--l]);
 		while(r<q[i].r) add(a[++r]);
-		while(t<q[i].t) 
+		while(t<q[i].t) update(l,r,++t);
+		while(t>q[i].t) update(l,r,t--);
+		ans[q[i].id]=calc();
+	}
+	for(int i=1;i<=cntq;i++){
+		qprint(ans[i]);
+		putchar('\n');		
 	}
 }
-
