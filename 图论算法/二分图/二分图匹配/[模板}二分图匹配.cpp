@@ -23,27 +23,26 @@ void add_edge(int u,int v){
 
 int vis[maxn];
 int match[maxn];
-int dfs(int x){
+bool dfs(int x){
 	for(int i=head[x];i;i=E[i].next){
 		int y=E[i].to;
-		if(!vis[y]){
-			vis[y]=1;
-			if(!match[y]||dfs(match[y])){
+		if(!vis[y]){ 
+			vis[y]=1; 
+			if(!match[y]/*尚未匹配*/||dfs(match[y])/*原来的匹配点可以找到新的匹配*/){
 				match[y]=x;
 				return 1;
 			}
-		}
+		} 
 	}
 	return 0;
-}
+} 
 int main(){
 	int u,v;
 	scanf("%d %d %d",&n,&m,&e);
 	for(int i=1;i<=e;i++){
 		scanf("%d %d",&u,&v);
 		if(u>n||v>m) continue;
-		add_edge(u,v);//注意，只用加单向边 
-		add_edge(v,u); 
+		add_edge(u,v);
 	}
 	int ans=0;
 	for(int i=1;i<=n;i++){

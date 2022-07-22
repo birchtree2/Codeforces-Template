@@ -1,0 +1,66 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "g++.exe build active file",
+            "command": "D:\\Dev-Cpp\\MinGW64\\bin\\g++.exe",
+            "args": [
+                "-Wall",
+                "-Wextra",
+                "-Wshadow",
+                "-Wunused",
+                "-g",
+                "-std=c++11",
+                "${fileDirname}\\${fileBasenameNoExtension}.cpp",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "D:\\Dev-Cpp\\MinGW64\\bin"
+            }
+            // 如果电脑上没有g++，但是装了dev c++，去掉注释，下面也是同理。
+        },
+        {
+            "type": "shell",
+            "label": "g++.exe build active file with O2",
+            "command": "D:\\Dev-Cpp\\MinGW64\\bin\\g++.exe",
+            "args": [
+                "-Wall",
+                "-Wextra",
+                "-Wshadow",
+                "-Wunused",
+                "-O2",
+                "-g",
+                "${fileDirname}\\${fileBasenameNoExtension}.cpp",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "D:\\Dev-Cpp\\MinGW64\\bin"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "task g++",
+            "command": "D:\\Dev-Cpp\\MinGW64\\bin\\g++.exe",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "-Wall",
+                "-DLOCAL",
+                "-Wl,--stack=64000000",
+                "-std=c++11",
+            ],
+            "options": {
+                "cwd": "D:\\Dev-Cpp\\MinGW64\\bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        }
+    ],
+    "version": "2.0.0"
+}

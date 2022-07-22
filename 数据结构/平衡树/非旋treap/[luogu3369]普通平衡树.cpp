@@ -18,7 +18,7 @@ template<typename T> inline void qread(T &x) {
 	x=x*sign;
 }
 template<typename T> void qprint(T x) {
-	if(x<0) {
+	if(x<0) { 
 		putchar('-');
 		qprint(-x);
 	} else if(x==0) {
@@ -69,7 +69,7 @@ struct fhq_treap {
 			x=y=0;
 			return;
 		}
-		if(tree[now].val<=k) {
+		if(tree[now].val<=k) { 
 			x=now;
 			split(rson(now),k,rson(x),y);
 		} else {
